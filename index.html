@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<title>jQuery observer patter</title>
@@ -13,10 +13,10 @@
 				!obj.__listeners__ && (obj.__listeners__ = []);
 				obj.__listeners__.push(f);
 			},
-			unsubscribe: function(fCallback) {
+			unsubscribe: function(f) {
 				var obj = this.get(0);
 				for (var i = 0, n = obj.__listeners__.length; i < n; i++) {
-					if (typeof obj.__listeners__[i]===fCallback) { delete obj.__listeners__[i]; }
+					if (typeof obj.__listeners__[i]===f) { delete obj.__listeners__[i]; }
 				}
 			},
 			notify: function(o) {
@@ -27,16 +27,12 @@
 			}
 		});
 		
+		// 포스트 액션을 담당.
 		$.widget("nj.postManager", {			
-			options: {
-			},
-			
-			_init: function() {
-			},
-			
-			_create: function() {
-			},
-			
+			options: {},			
+			_init: function() {},			
+			_create: function() {},
+			// 데이터 수신 콜백
 			onRecieveData: function(o) {
 				// for prevent widget's normal return values.
 				if ( !arguments.length ) { return $.proxy(arguments.callee,this) ; }
@@ -53,9 +49,8 @@
 			options: {},		
 			_init: function() {},			
 			_create: function() {},
-			// add thumbnail callback
+			// 썸네일 추가 액션
 			onAdd: function(o) {
-				// for self return
 				if ( !arguments.length ) { return $.proxy(arguments.callee,this) ; }
 				var el = $("<li></li>");
 				this.element.append(el);
@@ -64,12 +59,15 @@
 				this._update();
 			},
 			
+			// 썸네일 삭제 액션
 			onRemove : function () {
 				// event callback 
 				this._update();
 			},
 
+			// 데이터 싱크!
 			_update : function() {
+				// 업데이트 된 썸네일 정보를 notify
 				this.notify((function(aThumbLists){
 					var aDatas = [];
 					for (var i = 0, n = aThumbLists.length; i < n; i++) {
@@ -80,67 +78,101 @@
 			}
 		});		
 		
-		
+		// 이미지 업로더 클래스(투고 / 수정을 담당)
 		var CImageUploader = function(o) {
 			this._init(o) ;
 		};
 		CImageUploader.prototype = {
 			_init : function (o) {		
-				this._option = o;
+				this._oCfg = o;
 			},
 			
 			onUpload : function() {
 				var o = {
 					type : "I_UP",
 					src : "http://shai.com/agata.jpg",
-					param: this._option
+					param: this._oCfg
 				} ;		
 				 $(this).notify(o) ;
 			}
 		};
 		
+		// 이미지 URL 클래스(투고 / 수정을 담당)		
 		var CImageURL = function(o) {
 			this._init(o) ;
 		};
 		CImageURL.prototype = {
 			_init : function (o) {		
-				this._option = o;
+				this._oCfg = o;
 			},
 			
 			onGetComplete : function() {
 				var o = {
 					type : "I_URL",
 					src : "http://shai.com/agata.jpg",
-					param: this._option
+					param: this._oCfg
 				} ;		
 				 $(this).notify(o) ;
 			}
 		};
-				
+
+		// 맵 정보 업데이터
+		var CMapUpdater = function (o) {
+			this._init(o) ;
+		};
 		
+		CMapUpdater.prototype = {
+			_init : function (o) {
+				this._oCfg = o ;
+			},
+			onSet : function {
+				$(this).notify({
+					lat : "34.6",
+					lng : "127.5",
+					param: this._oCfg
+				});
+			}		
+		};		
+								
 		$(function() {
+			// Write form
 			var oWriteForm = $(".WriteForm").postManager();
+			
+			// Edit popup
 			var oEditForm = $(".EditForm").postManager();
 		
-			oWriteImageUploader = new CImageUploader("hoge");
-			oEditImageUploader = new CImageUploader("foo");
-			oWriteImageURL = new CImageURL("url_hoge");
-			oEditImageURL = new CImageURL("url_foo");
+			oWriteImageUploader = new CImageUploader({
+				type : "Image Write Upload"
+			});
+			oEditImageUploader = new CImageUploader({
+				type : "Image Edit Upload"
+			});
+			oWriteImageURL = new CImageURL({
+				type : "Image Edit URL"
+			});
+			oEditImageURL = new CImageURL({
+				type : "Image Edit URL"
+			});
 			
-			// watch!
+			oMapUpdater = new CMapUpdater({
+				type : "Map Set"
+			}) ;
+			
+			// observing!
 			$(oWriteImageUploader).subscribe(oWriteForm.postManager("onRecieveData"));
 			$(oEditImageUploader).subscribe(oEditForm.postManager("onRecieveData"));		
 			$(oWriteImageURL).subscribe(oWriteForm.postManager("onRecieveData"));
 			$(oEditImageURL).subscribe(oEditForm.postManager("onRecieveData"));
-			
+			$(oMapUpdater).subscribe(oEditForm.postManager("onRecieveData"));
 		});
 	</script>
 </head>
 <body>
-	<a href="#" onclick="oWriteImageUploader.onUpload() ;">upload1</a>
-	<a href="#" onclick="oEditImageUploader.onUpload() ;">upload2</a>
-	<a href="#" onclick="oWriteImageURL.onGetComplete() ;">upload1</a>
-	<a href="#" onclick="oEditImageURL.onGetComplete() ;">upload2</a>
+	<a href="#" onclick="oWriteImageUploader.onUpload() ;">On Write Image Upload</a>
+	<a href="#" onclick="oEditImageUploader.onUpload() ;">On Edit Image Upload</a>
+	<a href="#" onclick="oWriteImageURL.onGetComplete() ;">On Write Image URL</a>
+	<a href="#" onclick="oEditImageURL.onGetComplete() ;">On Edit Image URL</a>
+	<a href="#" onclick="oEditImageURL.onGetComplete() ;">On Map Set</a>	
 	<div class="WriteForm">WriteForm</div>
 	<div class="EditForm">EditForm</div>
 </body>
