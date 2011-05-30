@@ -70,12 +70,13 @@
 			},
 
 			_update : function() {
-				var aThumbLists = this.element.find("LI");
-				var aDatas = [];
-				for (var i = 0, n = aThumbLists.length; i < n; i++) {
-					aDatas.push($.data(aThumbLists[i], "data"));
-				}
-				this.notify(aDatas) ;
+				this.notify((function(aThumbLists){
+					var aDatas = [];
+					for (var i = 0, n = aThumbLists.length; i < n; i++) {
+						aDatas.push($.data(aThumbLists[i], "data"));
+					}
+					return aDatas ;
+				})(this.element.find("LI"))) ;
 			}
 		});		
 		
