@@ -38,6 +38,7 @@
 			},
 			
 			onRecieveData: function(o) {
+				// for prevent widget's normal return values.
 				if ( !arguments.length ) { return $.proxy(arguments.callee,this) ; }
 				console.log("MPostManager fetch action!") ;
 				this._fetch(o) ;
@@ -49,21 +50,17 @@
 		});
 		
 		$.widget("nj.thumbManager", {
-			options: {
-			},
-			
-			_init: function() {
-			},
-			
-			_create: function() {
-			},
-			
+			options: {},		
+			_init: function() {},			
+			_create: function() {},
+			// add thumbnail callback
 			onAdd: function(o) {
+				// for self return
 				if ( !arguments.length ) { return $.proxy(arguments.callee,this) ; }
 				var el = $("<li></li>");
 				this.element.append(el);
 				$.data(el.get(0), "data", o);
-				console.log("MPostManager fetch action!") ;				
+				console.log("MPostManager fetch action!") ;
 				this._update();
 			},
 			
@@ -73,12 +70,12 @@
 			},
 
 			_update : function() {
-				var list = this.element.find("LI");
-				var data = [];
-				for (var i = 0, n = list.length; i < n; i++) {
-					data.push($.data(list[i], "data"));
+				var aThumbLists = this.element.find("LI");
+				var aDatas = [];
+				for (var i = 0, n = aThumbLists.length; i < n; i++) {
+					aDatas.push($.data(aThumbLists[i], "data"));
 				}
-				this.notify(data) ;
+				this.notify(aDatas) ;
 			}
 		});		
 		
