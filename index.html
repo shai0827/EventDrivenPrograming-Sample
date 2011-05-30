@@ -6,6 +6,7 @@
 	<script type="text/javascript" src="http://plugins.jquery.com/files/jquery-watch.js_0.txt"></script>
 	<script type="text/javascript" src="jquery.ui.widget.js"></script>
 	<script type="text/javascript">
+		// Observer module
 		$.fn.extend({
 			subscribe: function(f) {
 				var obj = this.get(0);
@@ -43,7 +44,6 @@
 			},
 			
 			_fetch : function (o) {
-				// agata yotubato shai
 				console.log(o);				
 			}
 		});
@@ -121,29 +121,29 @@
 				
 		
 		$(function() {
-			var shai1 = $(".shai1").postManager();
-			var shai2 = $(".shai2").postManager();
+			var oWriteForm = $(".WriteForm").postManager();
+			var oEditForm = $(".EditForm").postManager();
 		
-			oImageUploader1 = new CImageUploader("hoge");
-			oImageUploader2 = new CImageUploader("foo");
-			oImageURL1 = new CImageURL("url_hoge");
-			oImageURL2 = new CImageURL("url_foo");
+			oWriteImageUploader = new CImageUploader("hoge");
+			oEditImageUploader = new CImageUploader("foo");
+			oWriteImageURL = new CImageURL("url_hoge");
+			oEditImageURL = new CImageURL("url_foo");
 			
 			// watch!
-			$(oImageUploader1).subscribe(shai1.postManager("onRecieveData"));
-			$(oImageUploader2).subscribe(shai2.postManager("onRecieveData"));		
-			$(oImageURL1).subscribe(shai1.postManager("onRecieveData"));
-			$(oImageURL2).subscribe(shai2.postManager("onRecieveData"));
+			$(oWriteImageUploader).subscribe(WriteForm.postManager("onRecieveData"));
+			$(oEditImageUploader).subscribe(EditForm.postManager("onRecieveData"));		
+			$(oWriteImageURL).subscribe(WriteForm.postManager("onRecieveData"));
+			$(oEditImageURL).subscribe(EditForm.postManager("onRecieveData"));
 			
 		});
 	</script>
 </head>
 <body>
-	<a href="#" onclick="oImageUploader1.onUpload() ;">upload1</a>
-	<a href="#" onclick="oImageUploader2.onUpload() ;">upload2</a>
-	<a href="#" onclick="oImageURL1.onGetComplete() ;">upload1</a>
-	<a href="#" onclick="oImageURL2.onGetComplete() ;">upload2</a>
-	<div class="shai1">shai1</div>
-	<div class="shai2">shai2</div>
+	<a href="#" onclick="oWriteImageUploader.onUpload() ;">upload1</a>
+	<a href="#" onclick="oEditImageUploader.onUpload() ;">upload2</a>
+	<a href="#" onclick="oWriteImageURL.onGetComplete() ;">upload1</a>
+	<a href="#" onclick="oEditImageURL.onGetComplete() ;">upload2</a>
+	<div class="WriteForm">WriteForm</div>
+	<div class="EditForm">EditForm</div>
 </body>
 </html>
