@@ -130,10 +130,10 @@
 			oEditImageURL = new CImageURL("url_foo");
 			
 			// watch!
-			$(oWriteImageUploader).subscribe(WriteForm.postManager("onRecieveData"));
-			$(oEditImageUploader).subscribe(EditForm.postManager("onRecieveData"));		
-			$(oWriteImageURL).subscribe(WriteForm.postManager("onRecieveData"));
-			$(oEditImageURL).subscribe(EditForm.postManager("onRecieveData"));
+			$(oWriteImageUploader).subscribe(oWriteForm.postManager("onRecieveData"));
+			$(oEditImageUploader).subscribe(oEditForm.postManager("onRecieveData"));		
+			$(oWriteImageURL).subscribe(oWriteForm.postManager("onRecieveData"));
+			$(oEditImageURL).subscribe(oEditForm.postManager("onRecieveData"));
 			
 		});
 	</script>
