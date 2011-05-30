@@ -28,7 +28,7 @@
 		});
 		
 		// 포스트 액션을 담당.
-		$.widget("nj.postManager", {			
+		$.widget("nj.CPostManager", {			
 			options: {},			
 			_init: function() {},			
 			_create: function() {},
@@ -36,7 +36,7 @@
 			onRecieveData: function(o) {
 				// for prevent widget's normal return values.
 				if ( !arguments.length ) { return $.proxy(arguments.callee,this) ; }
-				console.log("MPostManager fetch action!") ;
+				console.log("CPostManager fetch action!") ;
 				this._fetch(o) ;
 			},
 			
@@ -55,7 +55,7 @@
 				var el = $("<li></li>");
 				this.element.append(el);
 				$.data(el.get(0), "data", o);
-				console.log("MPostManager fetch action!") ;
+				console.log("CPostManager fetch action!") ;
 				this._update();
 			},
 			
@@ -76,7 +76,20 @@
 					return aDatas ;
 				})(this.element.find("LI"))) ;
 			}
-		});		
+		});
+		
+		// 미디어 공통 베이스  클래스
+		var CMediaInterface = function () {
+			_init : function () {
+			
+			}
+		};
+		
+		CMediaInterface.prototype = {
+			_onProcess : function (o) {
+				this.notify(o) ;
+			}
+		};
 		
 		// 이미지 업로더 클래스(투고 / 수정을 담당)
 		var CImageUploader = function(o) {
@@ -89,11 +102,11 @@
 			
 			onUpload : function() {
 				var o = {
-					type : "I_UP",
+					type : this._oCfg.type,
 					src : "http://shai.com/agata.jpg",
 					param: this._oCfg
-				} ;		
-				 $(this).notify(o) ;
+				} ;
+				 $(this)._onProcess(o) ;
 			}
 		};
 		
@@ -108,11 +121,11 @@
 			
 			onGetComplete : function() {
 				var o = {
-					type : "I_URL",
+					type : this._oCfg.type,
 					src : "http://shai.com/agata.jpg",
 					param: this._oCfg
-				} ;		
-				 $(this).notify(o) ;
+				} ;
+				 $(this)._onProcess(o) ;				 
 			}
 		};
 
@@ -135,35 +148,43 @@
 		};		
 								
 		$(function() {
-			// Write form
-			var oWriteForm = $(".WriteForm").postManager();
+			// 투고 폼 데이터 처리 매니져
+			var oWriteForm = $(".WriteForm").CPostManager();
 			
-			// Edit popup
-			var oEditForm = $(".EditForm").postManager();
+			// 수정 팝업 데이터 처리 매니져
+			var oEditForm = $(".EditForm").CPostManager();
 		
+			// 투고 이미지 업로더
 			oWriteImageUploader = new CImageUploader({
 				type : "Image Write Upload"
 			});
+			
+			// 수정 이미지 업로더
 			oEditImageUploader = new CImageUploader({
 				type : "Image Edit Upload"
 			});
+			
+			// 투고 이미지 URL 로더
 			oWriteImageURL = new CImageURL({
 				type : "Image Edit URL"
 			});
+			
+			// 수정 이미지 URL 로더
 			oEditImageURL = new CImageURL({
 				type : "Image Edit URL"
 			});
 			
+			// 맵 업데이터
 			oMapUpdater = new CMapUpdater({
 				type : "Map Set"
 			}) ;
 			
-			// observing!
-			$(oWriteImageUploader).subscribe(oWriteForm.postManager("onRecieveData"));
-			$(oEditImageUploader).subscribe(oEditForm.postManager("onRecieveData"));		
-			$(oWriteImageURL).subscribe(oWriteForm.postManager("onRecieveData"));
-			$(oEditImageURL).subscribe(oEditForm.postManager("onRecieveData"));
-			$(oMapUpdater).subscribe(oEditForm.postManager("onRecieveData"));
+			// observing 연동
+			$(oWriteImageUploader).subscribe(oWriteForm.CPostManager("onRecieveData"));
+			$(oEditImageUploader).subscribe(oEditForm.CPostManager("onRecieveData"));		
+			$(oWriteImageURL).subscribe(oWriteForm.CPostManager("onRecieveData"));
+			$(oEditImageURL).subscribe(oEditForm.CPostManager("onRecieveData"));
+			$(oMapUpdater).subscribe(oEditForm.CPostManager("onRecieveData"));
 		});
 	</script>
 </head>
